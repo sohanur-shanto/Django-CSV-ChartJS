@@ -1,0 +1,31 @@
+{% extends 'base.html' %} 
+
+{% block title %}
+2
+{% endblock title %}
+
+{% block content %}
+<br>
+<br>
+
+<form action="" method="POST" class="ui form" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{form}}
+    <br>
+    <br>
+    <button type="submit" class="ui button">Upload</button>
+</form>
+<br>
+<br>
+<br>
+<br>
+<center>
+<button class="ui right labeled icon button">
+  <i class="right arrow icon"></i>
+  <a href="data">Show Data
+</button>
+</center>
+
+
+
+{% endblock content %}
