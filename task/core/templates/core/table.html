@@ -1,21 +1,56 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <!-- Required meta tags -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://kit.fontawesome.com/yourcode.js" crossorigin="anonymous"></script>
     <script src='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js'></script>
-    <meta charset="utf-8">
+     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
-    <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 
-    <title>Show Table</title>
+    <title>Show Data</title>
   </head>
   <body>
-  <br>
-  <br>
+  <script type="text/javascript">
+        $("#btnPrint").live("click", function () {
+            var divContents = $("#dvContainer").html();
+            var printWindow = window.open('', '', 'height=400,width=800');
+            printWindow.document.write('<html><head><title>DIV Contents</title>');
+            printWindow.document.write('</head><body >');
+            printWindow.document.write(divContents);
+            printWindow.document.write('</body></html>');
+            printWindow.document.close();
+            printWindow.print();
+        });
+    </script>
 
+    <script>
+
+    $( document ).ready(function() {
+    $('#lnkPrint').click(function()
+     {
+         window.print();
+     });
+});
+    </script>
+  <form style="text-align:center;">
+
+  <a href="#" id="lnkPrint">Print</a>
+</form>
+  
+  <style>
+table, th, td{
+  border:1px solid black;
+}
+</style>
+<a href="/" class="btn btn-outline-dark" role="button" aria-pressed="true"><i class="bi bi-house"></i> Go to Home</a>
+<center>
+    <h4 style="color:green"><u><b> Export Data Table </b><u/></h4>
+</center>
+  <br>
+  <a style="float:right;" href="{% url 'core:d_csv' %}" class="btn btn-outline-dark" role="button" aria-pressed="true"> Download CSV File</a>
   <table class="table">
   <thead>
     <tr>
@@ -30,109 +65,222 @@
       <th scope="col">AAPL High</th>
     </tr>
   </thead>
-    {% for data in dataset %}
+    {% for q in qs %}
   <tbody>
     <tr>
-      <th scope="row">{{data.date}}</th>
-      <td>{{data.appl_high}}</td>
-      <td>{{data.appl_high}}</td>
-      <td>{{data.appl_high}}</td>
-      <td>{{data.appl_high}}</td>
-      <td>{{data.appl_high}}</td>
-      <td>{{data.appl_high}}</td>
-      <td>{{data.appl_high}}</td>
-      <td>{{data.appl_high}}</td>
+      <th scope="row">{{q.date}}</th>
+      <td>{{q.appl_high}}</td>
+      <td>{{q.appl_high}}</td>
+      <td>{{q.appl_high}}</td>
+      <td>{{q.appl_high}}</td>
+      <td>{{q.appl_high}}</td>
+      <td>{{q.appl_high}}</td>
+      <td>{{q.appl_high}}</td>
+      <td>{{q.appl_high}}</td>
     </tr>
   </tbody>
-  {% endfor %}
+
+ {% endfor %}
 </table>
-
-
+ <div style="float:right;">
+ {% if qs.has_previous %}
+  <a href="{% url 'core:get_data' %}?page={{qs.previous_page_number}}">Previous Page</a>
+  {% endif %}
+    {% if qs.has_next %}
+  <a href="{% url 'core:get_data' %}?page={{qs.next_page_number}}">Next Page</a>
+  {% endif %}
+  </div>
+<br>
 <br>
 <center>
-<div class="chartBox">
+
+<input style="float:right;" type="button" value="Download PDF File" id="btnPrint" />
+ <form id="form1">
+    <div id="dvContainer">    
+<div class="tabset">
+  <input type="radio" name="tabset" id="tab1" aria-controls="marzen" checked>
+  <label for="tab1"> Histogram </label>
+  <input type="radio" name="tabset" id="tab2" aria-controls="rauchbier">
+  <label for="tab2">Scatter Plot</label>
+  <input type="radio" name="tabset" id="tab3" aria-controls="dunkles">
+  <label for="tab3">Box Plot</label>
+    
+  <div class="tab-panels">
+    <section id="marzen" class="tab-panel">
+      <div class="chartBox">
   <canvas id="histogram"></canvas>
 </div>
+  </section>
+    <section id="rauchbier" class="tab-panel">
+      <div>
+{% if chart %}
+    <img src="data:image/png;base64, {{ chart|safe }}"
+    {% endif %}
+</div>
+    </section>
+    <section id="dunkles" class="tab-panel">
+     <div>
+{% if chart2 %}
+    <img src="data:image/png;base64, {{ chart2|safe }}"
+    {% endif %}
+</div>
+    </section>
+  </div>
+  
+</div>
+    
+
 </center>
+
+
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-<style>
+        <style>
 
-.chartBox {
-    width: 500px;
-    height: 500px;
-}
+            /*
+            CSS for the main interaction
+            */
+            .tabset > input[type="radio"] {
+            position: absolute;
+            left: -200vw;
+            }
 
-</style>
+            .tabset .tab-panel {
+            display: none;
+            }
 
-{% comment %} <script>
-var ctx = document.getElementById("myChart").getContext('2d');
+            .tabset > input:first-child:checked ~ .tab-panels > .tab-panel:first-child,
+            .tabset > input:nth-child(3):checked ~ .tab-panels > .tab-panel:nth-child(2),
+            .tabset > input:nth-child(5):checked ~ .tab-panels > .tab-panel:nth-child(3),
+            .tabset > input:nth-child(7):checked ~ .tab-panels > .tab-panel:nth-child(4),
+            .tabset > input:nth-child(9):checked ~ .tab-panels > .tab-panel:nth-child(5),
+            .tabset > input:nth-child(11):checked ~ .tab-panels > .tab-panel:nth-child(6) {
+            display: block;
+            }
 
-var options = {responsive: true, // Instruct chart js to respond nicely.
-    maintainAspectRatio: false, // Add to prevent default behaviour of full-width/height 
-};
+            /*
+            Styling
+            */
+            body {
+            font: 16px/1.5em "Overpass", "Open Sans", Helvetica, sans-serif;
+            color: #333;
+            font-weight: 300;
+            }
 
-// End Defining data
-var myChart = new Chart(ctx, {
-    type: 'scatter',
-    data: {
-        datasets: [{
-                label: 'Population', // Name the series
-                data: [{% for data in dataset %} {{ data.appl_high }}, {% endfor %}], // Specify the data values array
-          borderColor: '#2196f3', // Add custom color border            
-          backgroundColor: '#2196f3', // Add custom color background (Points and Fill)
-            }]
-    },
-    options: options
-});
-</script> {% endcomment %}
+            .tabset > label {
+            position: relative;
+            display: inline-block;
+            padding: 15px 15px 25px;
+            border: 1px solid transparent;
+            border-bottom: 0;
+            cursor: pointer;
+            font-weight: 600;
+            }
+
+            .tabset > label::after {
+            content: "";
+            position: absolute;
+            left: 15px;
+            bottom: 10px;
+            width: 22px;
+            height: 4px;
+            background: #8d8d8d;
+            }
+
+            .tabset > label:hover,
+            .tabset > input:focus + label {
+            color: #06c;
+            }
+
+            .tabset > label:hover::after,
+            .tabset > input:focus + label::after,
+            .tabset > input:checked + label::after {
+            background: #06c;
+            }
+
+            .tabset > input:checked + label {
+            border-color: #ccc;
+            border-bottom: 1px solid #fff;
+            margin-bottom: -1px;
+            }
+
+            .tab-panel {
+            padding: 30px 0;
+            border-top: 1px solid #ccc;
+            }
+
+            /*
+            Demo purposes only
+            */
+            *,
+            *:before,
+            *:after {
+            box-sizing: border-box;
+            }
+
+            body {
+            padding: 30px;
+            }
+
+            .tabset {
+            max-width: 65em;
+            }
+
+            .chartBox {
+                width: 900px;
+                height: 500px;
+            }
+
+            </style>
+
+            <script>
+            const ctx = document.getElementById('histogram').getContext('2d');
+
+            const chart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: [{% for data in dataset %} {{ data.id }}, {% endfor %}],
+                datasets: [{
+                label: 'AAPL High',
+                data: [{% for data in dataset %} {{ data.appl_high }}, {% endfor %}],
+                backgroundColor: 'green',
+                borderWidth: 0,
+                barPercentage: 1,
+                categoryPercentage: 1
+                }]
+            },
+            options: {
+                scales: {
+                xAxes: [{
+                    display: false,
+                    barPercentage: 1,
+                    ticks: {
+                    max: 3,
+                    }
+
+                }, {
+                    display: true,
+                    ticks: {
+                    autoSkip: false,
+                    max: 4,
+                    }
+                }],
+                yAxes: [{
+                    ticks: {
+                    beginAtZero: true
+                    }
+                }]
+                }
+            }
+            });
+
+            </script> 
 
 
-<script>
-const ctx = document.getElementById('histogram').getContext('2d');
-
-const chart = new Chart(ctx, {
-  type: 'line',
-  data: {
-    labels: [0, 1, 2, 3, 4],
-    datasets: [{
-      label: 'AAPL High',
-      data: [{% for data in dataset %} {{ data.appl_high }}, {% endfor %}],
-      backgroundColor: 'green',
-      borderWidth: 1,
-      barPercentage: 1,
-      categoryPercentage: 1
-    }]
-  },
-  options: {
-    scales: {
-      xAxes: [{
-        display: false,
-        barPercentage: 1.3,
-        ticks: {
-          max: 3,
-        }
-      }, {
-        display: true,
-        ticks: {
-          autoSkip: false,
-          max: 4,
-        }
-      }],
-      yAxes: [{
-        ticks: {
-          beginAtZero: true
-        }
-      }]
-    }
-  }
-});
-
-</script> 
-
-
-
+</div>
+    
+    </form>
     <script src='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js'></script>
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>

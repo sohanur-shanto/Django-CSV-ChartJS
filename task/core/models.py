@@ -10,7 +10,7 @@ class Csv(models.Model):
 
 class Data(models.Model):
     date = models.CharField(max_length=200)
-    aapl_open = models.DecimalField(max_digits=100, decimal_places=10, blank=True, null=True)
+    appl_open = models.DecimalField(max_digits=100, decimal_places=10, blank=True, null=True)
     appl_high = models.DecimalField(max_digits=100, decimal_places=10, blank=True, null=True)
     appl_low = models.DecimalField(max_digits=100, decimal_places=10, blank=True, null=True)
     appl_close = models.DecimalField(max_digits=100, decimal_places=10, blank=True, null=True)
